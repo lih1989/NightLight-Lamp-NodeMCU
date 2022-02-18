@@ -28,3 +28,6 @@ pnpm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### Компоненты для стилей TailWind.css
+See [https://flowbite.com](https://flowbite.com/docs/components/spinner/).
