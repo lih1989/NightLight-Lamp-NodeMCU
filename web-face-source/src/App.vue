@@ -11,7 +11,7 @@
     <!--  FOOTER  -->
     <footer class="w-full bg-gray-800">
       <div class="px-2 py-1 text-center text-white font-normal">
-        2021
+        Made by with Vue.js
       </div>
     </footer>
   </div>
