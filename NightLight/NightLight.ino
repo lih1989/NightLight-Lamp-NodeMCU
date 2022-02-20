@@ -10,9 +10,11 @@
 #include "json.h"
 #include "wifi_init.h"
 #include "http_init.h"
+#include "ws_init.h"
 
 void setup() {
     Serial.begin(115200);
+    Serial.setDebugOutput(true);
     Serial.println("SETUP - RUN");
 
     SPIFFS.begin();
@@ -25,8 +27,12 @@ void setup() {
 
     // Разворачивание веб сервера
     HTTP_init();
+
+    // Отрытие веб сокета
+    WS_init();
 }
 
 void loop() {
     server.handleClient();
+    webSocket.loop();
 }

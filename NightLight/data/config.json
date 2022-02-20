@@ -1,7 +1,7 @@
 {
   "effect": 1,
-  "ssidAP": "Gyverlamp",
-  "passwordAP": "123456789",
+  "ssidAP": "NightLamp",
+  "passwordAP": "todo_dev",
   "ssid": "dd-wrt",
   "password": "qwerty12345",
   "volume": 10
