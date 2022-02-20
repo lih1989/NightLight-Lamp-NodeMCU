@@ -19,13 +19,16 @@ String readFile(String fileName, size_t len ) {
     return temp;
 }
 
-//// ------------- Чтение значения json
-//String jsonRead(String &json, String name) {
-//  DynamicJsonBuffer jsonBuffer;
-//  JsonObject root = jsonBuffer.parseObject(json);
-//  return root[name].as<String>();
-//}
-//
+// Чтение значения json из строки
+String jsonRead(String &json, String name) {
+  DynamicJsonDocument doc(1024);
+  deserializeJson(doc, json);
+  JsonObject root = doc.as<JsonObject>();
+  String result = root[name].as<String>();
+  Serial.println("jsonRead: [" + name + "] = " + result);
+  return result;
+}
+
 //// ------------- Чтение значения json
 //int jsonReadtoInt(String &json, String name) {
 //  DynamicJsonBuffer jsonBuffer;
