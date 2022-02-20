@@ -3,6 +3,8 @@ const path = require('path')
 
 module.exports = {
   outputDir: path.resolve(__dirname, '../NightLight/data'),
+  publicPath: '',
+  filenameHashing: false,
   devServer: {
     // host: 'crm-local.anflat.ru',
     port: 7777
