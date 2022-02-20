@@ -58,13 +58,15 @@ bool handleFileRead(String path){
 
 void HTTP_init(void) {
     server.on("/config.json", HTTP_GET, []() {
-    server.send(200, "application/json", configSetup);
+        server.sendHeader("Content-Security-Policy","default-src * data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval' 'unsafe-dynamic';");
+        server.send(200, "application/json", configSetup);
     });
 
     server.on("/", HTTP_GET, [](){
-    if(!handleFileRead("/index.html")) server.send(404, "text/plain", "FileNotFound");
+        server.sendHeader("Content-Security-Policy","default-src * data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval' 'unsafe-dynamic';");
+        if(!handleFileRead("/index.html")) server.send(404, "text/plain", "FileNotFound");
     });
-  
+
 //  server.on("/index.htm", HTTP_GET, [](){
 //    if(!handleFileRead("/index.htm")) server.send(404, "text/plain", "FileNotFound");
 //  });  //list directory
@@ -86,7 +88,7 @@ void HTTP_init(void) {
 //  server.on("/edit", HTTP_GET, [](){
 //    if(!handleFileRead("/edit.htm")) server.send(404, "text/plain", "FileNotFound");
 //  });
-  
+
 //  server.on("/ssid", HTTP_GET, []() {
 //      jsonWrite(configSetup, "ssid", server.arg("ssid"));
 //      jsonWrite(configSetup, "password", server.arg("password"));
@@ -100,8 +102,8 @@ void HTTP_init(void) {
 //      saveConfig();                 //    Flash
 //      server.send(200, "text/plain", "OK");
 //  });
- 
-  
+
+
 //  //create file
 //  server.on("/edit", HTTP_PUT, handleFileCreate);
 //  //delete file
@@ -116,7 +118,7 @@ void HTTP_init(void) {
     server.serveStatic("/img", SPIFFS, "/img","max-age=86400");
     server.serveStatic("/js",   SPIFFS, "/js"  ,"max-age=86400");
     server.serveStatic("/css",  SPIFFS, "/css" ,"max-age=86400");
-  
+
   //get heap status, analog input value and all GPIO statuses in one json call
 //  server.on("/all", HTTP_GET, [](){
 //    String json = "{";
