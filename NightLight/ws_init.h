@@ -1,7 +1,7 @@
 #include <WebSocketsServer.h>
 #include <Hash.h>
 
-WebSocketsServer webSocket = WebSocketsServer(81);
+WebSocketsServer webSocket = WebSocketsServer(1181);
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length){
   Serial.printf("webSocketEvent(%d, %d, ...)\r\n", num, type);

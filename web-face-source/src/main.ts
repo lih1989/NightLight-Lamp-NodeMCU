@@ -13,7 +13,7 @@ const appInstance = createApp(App)
 const rootComponent = appInstance
   .use(router)
   .use(store)
-  .use(VueNativeSock, `ws://${location.host}:81`, {
+  .use(VueNativeSock, `ws://${location.hostname}:1181`, {
     store: store,
     format: 'json',
     // "connectManually": true,
