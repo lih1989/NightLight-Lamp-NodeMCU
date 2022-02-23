@@ -1,9 +1,22 @@
 #include <ESP8266WiFi.h>
+#include <DNSServer.h>
+#include <ESP8266mDNS.h>
 
+DNSServer dnsServer;
+const IPAddress apIP(192, 168, 1, 1);
 uint8_t connect = 0;
 
+//	Запускаю DNS - нужен для автооткрытия браузера с веб страницей настроек
+bool StartDnsServer(IPAddress apIP) {
+    const byte DNS_PORT = 53;
+    // if DNSServer is started with "*" for domain name, it will reply with
+    // provided IP to all DNS request
+    dnsServer.start(DNS_PORT, "*", apIP);
+    Serial.println("DNS server started");
+    return true;
+}
+
 bool StartAPMode() {
-	IPAddress apIP(192, 168, 4, 1);
 	// Отключаем WIFI
 	WiFi.disconnect();
 	// Меняем режим на режим точки доступа
@@ -18,6 +31,9 @@ bool StartAPMode() {
     //  Ограничение по кол-ву полключенных клиентов чтобы не было конфликтов при настройке
     //	ssid, pass, channel, hidden, max_connection
 	WiFi.softAP(_ssidAP.c_str(), _passwordAP.c_str(), 3, false, 1);
+
+    //	Запускаю DNS
+    StartDnsServer(apIP);
 	return true;
 }
 

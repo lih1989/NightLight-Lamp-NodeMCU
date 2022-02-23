@@ -2,6 +2,9 @@
 
 ESP8266WebServer server(80);
 
+// Шаблон для редиректа
+const String metaRefreshStr = "<head><meta http-equiv=\"refresh\" content=\"0; url=http://" + apIP.toString() + "\" /></head><body><p>redirecting...</p></body>";
+
 String getContentType(String filename){
     if(server.hasArg("download")) return "application/octet-stream";
     else if(filename.endsWith(".htm")) return "text/html";
@@ -26,24 +29,8 @@ String getContentType(String filename){
     return "text/plain";
 }
 
-void handleNotFound()
-{
-    String message = "File Not Found\n\n";
-    message += "URI: ";
-    message += server.uri();
-    message += "\nMethod: ";
-    message += (server.method() == HTTP_GET)?"GET":"POST";
-    message += "\nArguments: ";
-    message += server.args();
-    message += "\n";
-    for (uint8_t i=0; i<server.args(); i++){
-        message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
-    }
-    server.send(404, "text/plain", message);
-}
-
 bool handleFileRead(String path){
-    Serial.println("handleFileRead: " + path);
+    // Serial.println("handleFileRead: " + path);
     if(path.endsWith("/")) path += "index.html";
     String contentType = getContentType(path);
     String pathWithGz = path + ".gz";
@@ -58,62 +45,30 @@ bool handleFileRead(String path){
     return false;
 }
 
+void handleNotFound()
+{
+    // Если host обращения не сщщтвествует ip адресу устройства
+    if(apIP.toString() != String(server.hostHeader())) {
+        Serial.println("---REDIRECT---");
+        server.send(200, "text/html", metaRefreshStr);
+    } else if(!handleFileRead(server.uri())) {
+        Serial.println("---File Not Found---");
+        String message = "File Not Found\n\n";
+        message += "URI: ";
+        message += server.uri();
+        message += "\nMethod: ";
+        message += (server.method() == HTTP_GET)?"GET":"POST";
+        message += "\nArguments: ";
+        message += server.args();
+        message += "\n";
+        for (uint8_t i=0; i<server.args(); i++){
+            message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+        }
+        server.send(404, "text/plain", message);
+    }
+}
+
 void HTTP_init(void) {
-    server.on("/config.json", HTTP_GET, []() {
-        server.sendHeader("Content-Security-Policy","default-src * data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval' 'unsafe-dynamic';");
-        server.send(200, "application/json", configSetup);
-    });
-
-    server.on("/", HTTP_GET, [](){
-        server.sendHeader("Content-Security-Policy","default-src * data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval' 'unsafe-dynamic';");
-        if(!handleFileRead("/index.html")) server.send(404, "text/plain", "FileNotFound");
-    });
-
-//  server.on("/index.htm", HTTP_GET, [](){
-//    if(!handleFileRead("/index.htm")) server.send(404, "text/plain", "FileNotFound");
-//  });  //list directory
-//
-//  server.on("/settings.htm", HTTP_GET, [](){
-//    if(!handleFileRead("/settings.htm")) server.send(404, "text/plain", "FileNotFound");
-//  });
-//
-//  server.on("/sound.htm", HTTP_GET, [](){
-//    if(!handleFileRead("/sound.htm")) server.send(404, "text/plain", "FileNotFound");
-//  });
-//
-//  server.on("/settings", HTTP_GET, [](){
-//    if(!handleFileRead("/settings.htm")) server.send(404, "text/plain", "FileNotFound");
-//  });
-//
-//  server.on("/list", HTTP_GET, handleFileList);
-//  //load editor
-//  server.on("/edit", HTTP_GET, [](){
-//    if(!handleFileRead("/edit.htm")) server.send(404, "text/plain", "FileNotFound");
-//  });
-
-//  server.on("/ssid", HTTP_GET, []() {
-//      jsonWrite(configSetup, "ssid", server.arg("ssid"));
-//      jsonWrite(configSetup, "password", server.arg("password"));
-//      saveConfig();                 //    Flash
-//      server.send(200, "text/plain", "OK");
-//  });
-   //    SSDP
-//  server.on("/ssidap", HTTP_GET, []() {
-//      jsonWrite(configSetup, "ssidAP", server.arg("ssidAP"));
-//      jsonWrite(configSetup, "passwordAP", server.arg("passwordAP"));
-//      saveConfig();                 //    Flash
-//      server.send(200, "text/plain", "OK");
-//  });
-
-
-//  //create file
-//  server.on("/edit", HTTP_PUT, handleFileCreate);
-//  //delete file
-//  server.on("/edit", HTTP_DELETE, handleFileDelete);
-//  //first callback is called after the request has ended with all parsed arguments
-//  //second callback handles file uploads at that location
-//  server.on("/edit", HTTP_POST, [](){ server.send(200, "text/plain", ""); }, handleFileUpload);
-
     //called when the url is not defined here
     //use it to load content from SPIFFS
     server.onNotFound(handleNotFound);
@@ -121,16 +76,6 @@ void HTTP_init(void) {
     server.serveStatic("/js",   SPIFFS, "/js"  ,"max-age=86400");
     server.serveStatic("/css",  SPIFFS, "/css" ,"max-age=86400");
 
-  //get heap status, analog input value and all GPIO statuses in one json call
-//  server.on("/all", HTTP_GET, [](){
-//    String json = "{";
-//    json += "\"heap\":"+String(ESP.getFreeHeap());
-//    json += ", \"analog\":"+String(analogRead(A0));
-//    json += ", \"gpio\":"+String((uint32_t)(((GPI | GPO) & 0xFFFF) | ((GP16I & 0x01) << 16)));
-//    json += "}";
-//    server.send(200, "text/json", json);
-//    json = String();
-//  });
     server.begin();
     Serial.println("HTTP server started");
 }

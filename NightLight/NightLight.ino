@@ -32,6 +32,7 @@ void setup() {
 }
 
 void loop() {
+    dnsServer.processNextRequest();
     server.handleClient();
     webSocket.loop();
 }
