@@ -63,7 +63,7 @@ export default defineComponent({
       console.warn(this.$socket)
       this.$socket.send('some data')
       // If fomat is configured as json, you can call the send Obj method to send data
-      this.$socket.sendObj({ awesome: 'data' })
+      this.$socket.sendObj({ action: 'get', data: { todo: 1, status: 1 } })
     }
   }
 })
