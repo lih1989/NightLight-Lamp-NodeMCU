@@ -1,3 +1,5 @@
+#include <ESP8266WiFi.h>
+
 uint8_t connect = 0;
 
 bool StartAPMode() {
