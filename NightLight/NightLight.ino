@@ -1,13 +1,16 @@
-/*
-  TODO
-*/
-// global libs
+// External libs
 #include <FS.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
-// hand made libs
-#include "json.h"
+// Global vars
+String configSetup = "{}";
+
+// Hand made logic
+#include "fileSystemHelper.h"
+FileSystemHelper FileSystem;
+#include "jsonHelper.h"
+JsonHelper Json;
 #include "wifi_init.h"
 #include "http_init.h"
 #include "ws_init.h"
@@ -17,18 +20,17 @@ void setup() {
     Serial.setDebugOutput(true);
     Serial.println("SETUP - RUN");
 
-    SPIFFS.begin();
-    // Конфиг из Файловой системы
-    configSetup = readFile("config.json", 4096);
+    // Получаю конфигурацию из файловой системы
+    configSetup = FileSystem.readFile("config.json", 4096);
     Serial.println(configSetup);
 
-    // Разворачивание WIFI
+    // Инициализирую WIFI
     WIFIinit();
 
-    // Разворачивание веб сервера
+    // Инициализирую веб сервер
     HTTP_init();
 
-    // Отрытие веб сокета
+    // Инициализирую веб сокет сервер
     WS_init();
 }
 
