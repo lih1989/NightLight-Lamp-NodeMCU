@@ -1,13 +1,10 @@
 // External libs
 
 // Global vars
-String configSetup = "{}";
 
 // Hand made logic
-#include "fileSystemHelper.h"
-FileSystemHelper FileSystem;
-#include "jsonHelper.h"
-JsonHelper Json;
+#include "jsonStateHelper.h"
+JsonState State;
 #include "wifi_init.h"
 #include "http_init.h"
 #include "ws_init.h"
@@ -18,8 +15,14 @@ void setup() {
     Serial.println("SETUP - RUN");
 
     // Получаю конфигурацию из файловой системы
-    configSetup = FileSystem.readFile("config.json", 4096);
-    Serial.println(configSetup);
+    State.loadState();
+    Serial.println("FROM:");
+    State.printState();
+    State.data.status = false;
+    State.data.effect = 3;
+    State.saveState();
+    Serial.println("TO:");
+    State.printState();
 
     // Инициализирую WIFI
     WIFIinit();
@@ -32,7 +35,7 @@ void setup() {
 }
 
 void loop() {
-    dnsServer.processNextRequest();
-    server.handleClient();
-    webSocket.loop();
+//    dnsServer.processNextRequest();
+//    server.handleClient();
+//    webSocket.loop();
 }
