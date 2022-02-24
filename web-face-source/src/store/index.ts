@@ -61,6 +61,9 @@ export default createStore({
   getters: {
     isSocketConnected (state) {
       return !!state?.socket?.isConnected
+    },
+    lastMessage (state) {
+      return state?.socket?.message || {}
     }
   },
   modules: {}

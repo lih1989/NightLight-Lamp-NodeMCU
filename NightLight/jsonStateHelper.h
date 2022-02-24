@@ -48,6 +48,11 @@ class JsonState {
       // Copy values from the JsonDocument to the Config
       data.status = doc["status"] | false;
       data.effect = doc["effect"] | 1;
+      data.volume = doc["volume"] | 10;
+      data.ssidAP = doc["ssidAP"] | "NightLamp";
+      data.passwordAP = doc["passwordAP"] | "todo_dev";
+      data.ssid = doc["ssid"] | "dd-wrt";
+      data.password = doc["password"] | "qwerty12345";
     
       // Close the file (Curiously, File's destructor doesn't close the file)
       file.close();
@@ -66,6 +71,11 @@ class JsonState {
       // Set the values in the document
       doc["status"] = data.status;
       doc["effect"] = data.effect;
+      doc["volume"] = data.volume;
+      doc["ssidAP"] = data.ssidAP;
+      doc["passwordAP"] = data.passwordAP;
+      doc["ssid"] = data.ssid;
+      doc["password"] = data.password;
     
       // Serialize JSON to file
       if (serializeJson(doc, file) == 0) {
@@ -95,6 +105,46 @@ class JsonState {
       file.close();
       Serial.println(fileString);
       return fileString;
+    }
+    // Prints the content of a file to the Serial
+    String wsJsonPayloadHandler(String payload) {
+      Serial.println(payload);
+      
+      StaticJsonDocument<512> doc;
+      DeserializationError error = deserializeJson(doc, payload);
+      if (error) {
+        Serial.println(F("loadConfiguration - stringToDoc: Failed to read"));
+      }
+
+      if (doc.containsKey("status")) {
+        data.status = doc["status"];
+      }
+
+      if (doc.containsKey("effect")) {
+        data.effect = doc["effect"];
+      }
+
+      if (doc.containsKey("volume")) {
+        data.volume = doc["volume"];
+      }
+
+      if (doc.containsKey("ssidAP")) {
+        data.ssidAP = doc["ssidAP"] | "NightLamp";
+      }
+
+      if (doc.containsKey("passwordAP")) {
+        data.passwordAP = doc["passwordAP"] | "123456789";
+      }
+
+      if (doc.containsKey("ssid")) {
+        data.ssid = doc["ssid"] | "admin";
+      }
+
+      if (doc.containsKey("password")) {
+        data.password = doc["password"] | "123456789";
+      }
+      saveState();
+      return printState();
     }
 
 };

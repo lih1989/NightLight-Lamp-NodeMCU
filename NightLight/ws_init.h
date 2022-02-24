@@ -14,15 +14,16 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
                 IPAddress ip = webSocket.remoteIP(num);
                 Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
 
-                // send message to client
                 String currentState = State.printState();
+                // send message to client
                 webSocket.sendTXT(num, currentState);
             }
             break;
         case WStype_TEXT: {
             Serial.printf("[%u] get Text: %s\n", num, payload);
             //  Обрабатываю входящее сообщение и генерирую ответ
-//            String answerMessage = Json.wsJsonPayloadHandler(payload);
+            String payload_str = String((char*) payload);
+            String answerMessage = State.wsJsonPayloadHandler(payload_str);
 //            // если результат пустой то отдаю обновленную конфигурацию иначе ответ с комментарием что не так
 //            answerMessage = answerMessage == "" ? configSetup : answerMessage;
 //            webSocket.sendTXT(num, answerMessage);
@@ -32,6 +33,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
 
             // send data to all connected clients
             // webSocket.broadcastTXT("message here");
+            webSocket.sendTXT(num, answerMessage);
             break;
         }
         case WStype_BIN: {
