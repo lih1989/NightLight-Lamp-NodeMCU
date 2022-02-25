@@ -96,18 +96,22 @@ class JsonState {
     }
     
     // Prints the content of a file to the Serial
-    String printState() {
+    char * printStateChar() {
       File file = SPIFFS.open(stateFilePath, "r");
       if (!file) {
         Serial.println(F("printFile - Failed to open file"));
       }
-      String fileString = file.readString();
+      
+      size_t fileSize = file.size();
+      char fileCharArray[fileSize];
+      file.readBytes(fileCharArray, fileSize);
+      
       file.close();
-      Serial.println(fileString);
-      return fileString;
+      Serial.println(fileCharArray);
+      return fileCharArray;
     }
     // Prints the content of a file to the Serial
-    String wsJsonPayloadHandler(String payload) {
+    char * wsJsonPayloadHandler(char * payload) {
       Serial.println(payload);
       
       StaticJsonDocument<512> doc;
@@ -144,7 +148,7 @@ class JsonState {
         data.password = doc["password"] | "123456789";
       }
       saveState();
-      return printState();
+      return printStateChar();
     }
 
 };
