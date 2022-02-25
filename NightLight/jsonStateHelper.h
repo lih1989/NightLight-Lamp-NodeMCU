@@ -12,10 +12,10 @@
 struct State {
   bool status;
   int effect;
-  String ssidAP;
-  String passwordAP;
-  String ssid;
-  String password;
+  const char* ssidAP;
+  const char* passwordAP;
+  const char* ssid;
+  const char* password;
   int volume;
 };
 
@@ -49,10 +49,10 @@ class JsonState {
       data.status = doc["status"] | false;
       data.effect = doc["effect"] | 1;
       data.volume = doc["volume"] | 10;
-      data.ssidAP = doc["ssidAP"] | "NightLamp";
-      data.passwordAP = doc["passwordAP"] | "todo_dev";
-      data.ssid = doc["ssid"] | "dd-wrt";
-      data.password = doc["password"] | "qwerty12345";
+      data.ssidAP = doc["ssidAP"];
+      data.passwordAP = doc["passwordAP"];
+      data.ssid = doc["ssid"];
+      data.password = doc["password"];
     
       // Close the file (Curiously, File's destructor doesn't close the file)
       file.close();
@@ -117,7 +117,7 @@ class JsonState {
       StaticJsonDocument<512> doc;
       DeserializationError error = deserializeJson(doc, payload);
       if (error) {
-        Serial.println(F("loadConfiguration - stringToDoc: Failed to read"));
+        Serial.println(F("loadConfiguration - wsJsonPayloadHandler: Failed to read"));
       }
 
       if (doc.containsKey("status")) {
@@ -133,19 +133,19 @@ class JsonState {
       }
 
       if (doc.containsKey("ssidAP")) {
-        data.ssidAP = doc["ssidAP"] | "NightLamp";
+        data.ssidAP = doc["ssidAP"];
       }
 
       if (doc.containsKey("passwordAP")) {
-        data.passwordAP = doc["passwordAP"] | "123456789";
+        data.passwordAP = doc["passwordAP"];
       }
 
       if (doc.containsKey("ssid")) {
-        data.ssid = doc["ssid"] | "admin";
+        data.ssid = doc["ssid"];
       }
 
       if (doc.containsKey("password")) {
-        data.password = doc["password"] | "123456789";
+        data.password = doc["password"];
       }
       saveState();
       return printStateChar();
