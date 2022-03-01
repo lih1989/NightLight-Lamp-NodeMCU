@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import store from './store'
 import router from './router'
+import { customPassToStoreHandler } from './Helper'
 
 import './styles/app.css'
 import 'flowbite'
@@ -19,7 +20,8 @@ const rootComponent = appInstance
     // "connectManually": true,
     reconnection: true,
     reconnectionAttempts: 5,
-    reconnectionDelay: 3000
+    reconnectionDelay: 3000,
+    passToStoreHandler: customPassToStoreHandler
   })
   .mount('#app')
 
