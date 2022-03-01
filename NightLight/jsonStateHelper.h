@@ -12,10 +12,10 @@
 struct State {
   bool status;
   int effect;
-  const char* ssidAP;
-  const char* passwordAP;
-  const char* ssid;
-  const char* password;
+  char ssidAP[64];
+  char passwordAP[64];
+  char ssid[64];
+  char password[64];
   int volume;
 };
 
@@ -49,10 +49,10 @@ class JsonState {
       data.status = doc["status"] | false;
       data.effect = doc["effect"] | 1;
       data.volume = doc["volume"] | 10;
-      data.ssidAP = doc["ssidAP"];
-      data.passwordAP = doc["passwordAP"];
-      data.ssid = doc["ssid"];
-      data.password = doc["password"];
+      strlcpy(data.ssidAP, doc["ssidAP"], sizeof(data.ssidAP));
+      strlcpy(data.passwordAP, doc["passwordAP"], sizeof(data.passwordAP));
+      strlcpy(data.ssid, doc["ssid"], sizeof(data.ssid));
+      strlcpy(data.password, doc["password"], sizeof(data.password));
     
       // Close the file (Curiously, File's destructor doesn't close the file)
       file.close();
@@ -133,19 +133,19 @@ class JsonState {
       }
 
       if (doc.containsKey("ssidAP")) {
-        data.ssidAP = doc["ssidAP"];
+        strlcpy(data.ssidAP, doc["ssidAP"], sizeof(data.ssidAP));
       }
 
       if (doc.containsKey("passwordAP")) {
-        data.passwordAP = doc["passwordAP"];
+        strlcpy(data.passwordAP, doc["passwordAP"], sizeof(data.passwordAP));
       }
 
       if (doc.containsKey("ssid")) {
-        data.ssid = doc["ssid"];
+        strlcpy(data.ssid, doc["ssid"], sizeof(data.ssid));
       }
 
       if (doc.containsKey("password")) {
-        data.password = doc["password"];
+        strlcpy(data.password, doc["password"], sizeof(data.password));
       }
       saveState();
       return printStateChar();
