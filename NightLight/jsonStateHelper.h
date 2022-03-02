@@ -33,6 +33,7 @@ class JsonState {
       File file = SPIFFS.open(stateFilePath, "r");
       if (!file) {
         Serial.println(F("loadConfiguration - Failed to open file"));
+        return;
       }
     
       // Allocate a temporary JsonDocument
@@ -42,8 +43,10 @@ class JsonState {
     
       // Deserialize the JSON document
       DeserializationError error = deserializeJson(doc, file);
-      if (error)
+      if (error){
         Serial.println(F("loadConfiguration - deserializeJson: Failed to read file, using default configuration"));
+        return;  
+      }
     
       // Copy values from the JsonDocument to the Config
       data.status = doc["status"] | false;
@@ -60,39 +63,40 @@ class JsonState {
     
     // Saves the configuration to a file
     void saveState() {
-      // Delete existing file, otherwise the configuration is appended to the file
-      File file = SPIFFS.open(stateFilePath, "w");
-      if (!file) {
-        Serial.println(F("saveConfiguration - Failed to open file"));
-      }
-    
-      StaticJsonDocument<256> doc;
-    
-      // Set the values in the document
-      doc["status"] = data.status;
-      doc["effect"] = data.effect;
-      doc["volume"] = data.volume;
-      doc["ssidAP"] = data.ssidAP;
-      doc["passwordAP"] = data.passwordAP;
-      doc["ssid"] = data.ssid;
-      doc["password"] = data.password;
-    
-      // Serialize JSON to file
-      if (serializeJson(doc, file) == 0) {
-        Serial.println(F("saveConfiguration - serializeJson: Failed to write to file"));
-      }
-    
-      int bytesWritten = file.print(file);
-      if (bytesWritten > 0) {
-        Serial.println("File was written");
-        Serial.println(bytesWritten);
-     
-      } else {
-        Serial.println("File write failed");
-      }
-      
-      // Close the file
-      file.close();
+      Serial.println("--- saveState---");
+//      // Delete existing file, otherwise the configuration is appended to the file
+//      File file = SPIFFS.open(stateFilePath, "w");
+//      if (!file) {
+//        Serial.println(F("saveConfiguration - Failed to open file"));
+//      }
+//    
+//      StaticJsonDocument<256> doc;
+//    
+//      // Set the values in the document
+//      doc["status"] = data.status;
+//      doc["effect"] = data.effect;
+//      doc["volume"] = data.volume;
+//      doc["ssidAP"] = data.ssidAP;
+//      doc["passwordAP"] = data.passwordAP;
+//      doc["ssid"] = data.ssid;
+//      doc["password"] = data.password;
+//    
+//      // Serialize JSON to file
+//      if (serializeJson(doc, file) == 0) {
+//        Serial.println(F("saveConfiguration - serializeJson: Failed to write to file"));
+//      }
+//    
+//      int bytesWritten = file.print(file);
+//      if (bytesWritten > 0) {
+//        Serial.println("File was written");
+//        Serial.println(bytesWritten);
+//     
+//      } else {
+//        Serial.println("File write failed");
+//      }
+//      
+//      // Close the file
+//      file.close();
     }
     
     // Prints the content of a file to the Serial
@@ -117,7 +121,8 @@ class JsonState {
       StaticJsonDocument<512> doc;
       DeserializationError error = deserializeJson(doc, payload);
       if (error) {
-        Serial.println(F("loadConfiguration - wsJsonPayloadHandler: Failed to read"));
+        Serial.println(F("wsJsonPayloadHandler - wsJsonPayloadHandler: Failed to read"));
+        return printStateChar();
       }
 
       if (doc.containsKey("status")) {
