@@ -30,9 +30,10 @@ String getContentType(String filename){
 }
 
 bool handleFileRead(String path){
-    // Serial.println("handleFileRead: " + path);
+     Serial.println("handleFileRead: " + path);
     if(path.endsWith("/")) path += "index.html";
     String contentType = getContentType(path);
+     Serial.println("handleFileRead Content: " + contentType);
     String pathWithGz = path + ".gz";
     if(SPIFFS.exists(pathWithGz) || SPIFFS.exists(path)){
         if(SPIFFS.exists(pathWithGz))
@@ -40,8 +41,10 @@ bool handleFileRead(String path){
         File file = SPIFFS.open(path, "r");
         size_t sent = server.streamFile(file, contentType);
         file.close();
+        Serial.println("handleFileRead exists: " + path);
         return true;
     }
+    Serial.println("handleFileRead NOT exists");
     return false;
 }
 
@@ -49,7 +52,7 @@ void handleNotFound()
 {
     // Если host обращения не сщщтвествует ip адресу устройства
     if(apIP.toString() != String(server.hostHeader())) {
-        Serial.println("---REDIRECT---");
+        Serial.println("---REDIRECT---<" + apIP.toString() + "> | <" + String(server.hostHeader()) + ">");
         server.send(200, "text/html", metaRefreshStr);
     } else if(!handleFileRead(server.uri())) {
         Serial.println("---File Not Found---");
@@ -68,14 +71,22 @@ void handleNotFound()
     }
 }
 
+void handleRoot() {
+  if(!handleFileRead("/index.html")) {
+    server.send(404, "text/plain", "FileNotFound");
+  }
+}
+
 void HTTP_init(void) {
+    server.on("/", handleRoot);
     //called when the url is not defined here
     //use it to load content from SPIFFS
     server.onNotFound(handleNotFound);
-    server.serveStatic("/img", SPIFFS, "/img","max-age=86400");
-    server.serveStatic("/js",   SPIFFS, "/js"  ,"max-age=86400");
-    server.serveStatic("/css",  SPIFFS, "/css" ,"max-age=86400");
+    server.serveStatic("/img", SPIFFS, "/img","max-age=60");
+    server.serveStatic("/js",   SPIFFS, "/js"  ,"max-age=60");
+    server.serveStatic("/css",  SPIFFS, "/css" ,"max-age=60");
 
     server.begin();
     Serial.println("HTTP server started");
+    State.saveState();
 }

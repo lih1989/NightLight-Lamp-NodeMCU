@@ -2,6 +2,7 @@
 const path = require('path')
 
 module.exports = {
+  productionSourceMap: false,
   outputDir: path.resolve(__dirname, '../NightLight/data'),
   publicPath: '',
   filenameHashing: false,
@@ -23,6 +24,14 @@ module.exports = {
   //     }
   //   }
   // },
+  configureWebpack: {
+    optimization: {
+      splitChunks: {
+        minSize: 10000,
+        maxSize: 100000
+      }
+    }
+  },
   pwa: {
     name: 'RRC',
     themeColor: '#e4300e',
