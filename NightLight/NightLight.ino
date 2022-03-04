@@ -17,13 +17,13 @@ void setup() {
 
     // Получаю конфигурацию из файловой системы
     State.loadState();
-//    Serial.println("FROM:");
-//    State.printStateChar();
-//    State.data.status = false;
     State.data.effect = random(10, 20);
     State.saveState();
-    Serial.println("PRINT:");
-    State.printStateChar();
+
+    char tmp[256];
+    Serial.println("SETUP PRINT:");
+    State.printStateChar(tmp);
+    Serial.println(tmp);
 
     // Инициализирую WIFI
     WIFIinit();

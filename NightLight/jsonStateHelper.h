@@ -26,32 +26,49 @@ class JsonState {
       SPIFFS.begin();
     };
     const char *stateFilePath = "/config.json";
+// TODO - этот метод читает состояние с файловой системы
+//    void printStateChar (char* return_data) {
+//        int n=0;
+//        Serial.printf("Reading file: %s\n", stateFilePath);
+//    
+//        File file = SPIFFS.open(stateFilePath, "r");
+//        if (!file || file.isDirectory())
+//        {
+//            Serial.println("Failed to open file for reading");
+//            return;
+//        }
+//        Serial.print("Read from file: ");
+//        char tmp[file.size() + 1];
+//        while (file.available()) {
+//            char c =  file.read();
+////            delayMicroseconds(100);
+//            tmp[n] = c; //записываю во временный буфер
+//            n=n+1;
+//        }
+//        file.close();
+//    
+//        strlcpy(return_data, tmp, sizeof(tmp));
+//    }
+// TODO - этот метод читает состояние из структуры
+    void printStateChar (char* output) {
+      StaticJsonDocument<512> doc;
+      
+      // Set the values in the document
+      doc["status"] = data.status;
+      doc["effect"] = data.effect;
+      doc["volume"] = data.volume;
+      doc["ssidAP"] = data.ssidAP;
+      doc["passwordAP"] = data.passwordAP;
+      doc["ssid"] = data.ssid;
+      doc["password"] = data.password;
 
-    void readFile123(char* return_data) {
-        int n=0;
-        Serial.printf("Reading file: %s\n", stateFilePath);
-    
-        File file = SPIFFS.open(stateFilePath, "r");
-        if (!file || file.isDirectory())
-        {
-            Serial.println("Failed to open file for reading");
-            return;
-        }
-        Serial.print("Read from file: ");
-        char tmp[file.size() + 1];
-        while (file.available()) {
-            char c =  file.read();
-            delayMicroseconds(100);
-    //        Serial.print(c);
-    //        strcat(return_data, &c); //returns meditation error
-    //        return_data[n]=c; //returns meditation error
-            tmp[n] = c; //записываю во временный буфер
-            n=n+1;
-        }
-        file.close();
-    
-        strlcpy(return_data, tmp, sizeof(tmp));
+      char tmp[512];
+      if (serializeJsonPretty(doc, tmp) == 0) {
+        Serial.println(F("printStateChar - serializeJsonPretty: Failed to write to file"));
+      }
+      strlcpy(output, tmp, sizeof(tmp));
     }
+    
 
 
     // Loads the configuration from a file
@@ -91,7 +108,7 @@ class JsonState {
 
     // Saves the configuration to a file
     void saveState() {
-      Serial.println("--- saveState---");
+      Serial.println("--- saveState---START---");
       Serial.printf("[ssidAP:%s], [passwordAP:%s], [ssid:%s], [password:%s]\n", data.ssidAP,  data.passwordAP, data.ssid, data.password);
 
       StaticJsonDocument<512> doc;
@@ -110,8 +127,8 @@ class JsonState {
       if (serializeJsonPretty(doc, strData) == 0) {
         Serial.println(F("saveState - serializeJsonPretty: Failed to write to file"));
       }
-      Serial.println("+++saveState - strData+++");
-      Serial.println(strData);
+//      Serial.println("+++saveState - strData+++");
+//      Serial.println(strData);
 
 
       Serial.printf("Writing file: %s\r\n", stateFilePath);
@@ -127,43 +144,18 @@ class JsonState {
           Serial.println("- write failed");
       }
       file.close();
-    }
-
-    // Prints the content of a file to the Serial
-    char * printStateChar() {
-      Serial.println("--- printStateChar ---");
-      int n=0;
-      File file = SPIFFS.open(stateFilePath, "r");
-      if(!file || file.isDirectory()){
-          Serial.println("- failed to open file for reading");
-      }
-
-//      size_t fileSize = file.size();
-//      char fileCharArray[fileSize];
-//      file.read((uint8_t *)fileCharArray, sizeof(fileCharArray));
-//      file.close();
-      char tmp[file.size() + 1];
-      while (file.available()) {
-          char c =  file.read();
-          delayMicroseconds(100);
-          tmp[n] = c; //записываю во временный буфер
-          n=n+1;
-      }
-      file.close();
-      Serial.println(tmp);
-      Serial.println("--- END ---");
-      return tmp;
+      Serial.println("--- saveState---END---");
     }
     
     // Prints the content of a file to the Serial
-    char * wsJsonPayloadHandler(char * payload) {
+    void wsJsonPayloadHandler(char * payload) {
       Serial.println(payload);
 
       StaticJsonDocument<512> doc;
       DeserializationError error = deserializeJson(doc, payload);
       if (error) {
         Serial.println(F("wsJsonPayloadHandler - wsJsonPayloadHandler: Failed to read"));
-        return printStateChar();
+        return;
       }
 
       if (doc.containsKey("status")) {
@@ -193,8 +185,6 @@ class JsonState {
       if (doc.containsKey("password")) {
         strlcpy(data.password, doc["password"], sizeof(data.password));
       }
-      saveState();
-      return printStateChar();
     }
 
 };

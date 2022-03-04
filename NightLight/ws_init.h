@@ -9,21 +9,29 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         case WStype_DISCONNECTED:
             Serial.printf("[%u] Disconnected!\n", num);
             break;
-        case WStype_CONNECTED:
-            {
+        case WStype_CONNECTED: {
                 IPAddress ip = webSocket.remoteIP(num);
                 Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
 
+                char tmp[256];
+                State.printStateChar(tmp);
+                Serial.println("WStype_CONNECTED PRINT:");
+                Serial.println(tmp);
                 // send message to client
-//                State.printStateChar()
-                webSocket.sendTXT(num, "{}");
-            }
+                webSocket.sendTXT(num, tmp);
             break;
+        }
         case WStype_TEXT: {
             Serial.printf("[%u] get Text: %s\n", num, payload);
             //  Обрабатываю входящее сообщение и генерирую ответ
-            //  State.wsJsonPayloadHandler((char*) payload)
-            webSocket.sendTXT(num, "{}");
+            State.wsJsonPayloadHandler((char*) payload);
+            char tmp[256];
+            State.printStateChar(tmp);
+            Serial.println("WStype_TEXT PRINT:");
+            Serial.println(tmp);
+            // send message to client
+            webSocket.sendTXT(num, tmp);
+//            State.saveState();
 
             // send message to client
             // webSocket.sendTXT(num, "message here");
