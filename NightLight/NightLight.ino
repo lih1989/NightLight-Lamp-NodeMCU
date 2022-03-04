@@ -22,7 +22,7 @@ void setup() {
 
     char tmp[256];
     Serial.println("SETUP PRINT:");
-    State.printStateChar(tmp);
+    State.getState(tmp);
     Serial.println(tmp);
 
     // Инициализирую WIFI

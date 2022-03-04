@@ -93,6 +93,6 @@ void HTTP_init(void) {
 //    State.saveState();
 //    char tmp[256];
 //    Serial.println("PRINT:");
-//    State.printStateChar(tmp);
+//    State.getState(tmp);
 //    Serial.println(tmp);
 }
