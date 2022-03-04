@@ -27,6 +27,33 @@ class JsonState {
     };
     const char *stateFilePath = "/config.json";
 
+    void readFile123(char* return_data) {
+        int n=0;
+        Serial.printf("Reading file: %s\n", stateFilePath);
+    
+        File file = SPIFFS.open(stateFilePath, "r");
+        if (!file || file.isDirectory())
+        {
+            Serial.println("Failed to open file for reading");
+            return;
+        }
+        Serial.print("Read from file: ");
+        char tmp[file.size() + 1];
+        while (file.available()) {
+            char c =  file.read();
+            delayMicroseconds(100);
+    //        Serial.print(c);
+    //        strcat(return_data, &c); //returns meditation error
+    //        return_data[n]=c; //returns meditation error
+            tmp[n] = c; //записываю во временный буфер
+            n=n+1;
+        }
+        file.close();
+    
+        strlcpy(return_data, tmp, sizeof(tmp));
+    }
+
+
     // Loads the configuration from a file
     void loadState() {
       // Open file for reading
@@ -104,19 +131,30 @@ class JsonState {
 
     // Prints the content of a file to the Serial
     char * printStateChar() {
+      Serial.println("--- printStateChar ---");
+      int n=0;
       File file = SPIFFS.open(stateFilePath, "r");
-      if (!file) {
-        Serial.println(F("printFile - Failed to open file"));
+      if(!file || file.isDirectory()){
+          Serial.println("- failed to open file for reading");
       }
 
-      size_t fileSize = file.size();
-      char fileCharArray[fileSize];
-      file.readBytes(fileCharArray, fileSize);
-
+//      size_t fileSize = file.size();
+//      char fileCharArray[fileSize];
+//      file.read((uint8_t *)fileCharArray, sizeof(fileCharArray));
+//      file.close();
+      char tmp[file.size() + 1];
+      while (file.available()) {
+          char c =  file.read();
+          delayMicroseconds(100);
+          tmp[n] = c; //записываю во временный буфер
+          n=n+1;
+      }
       file.close();
-      Serial.println(fileCharArray);
-      return fileCharArray;
+      Serial.println(tmp);
+      Serial.println("--- END ---");
+      return tmp;
     }
+    
     // Prints the content of a file to the Serial
     char * wsJsonPayloadHandler(char * payload) {
       Serial.println(payload);

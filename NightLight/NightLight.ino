@@ -22,8 +22,8 @@ void setup() {
 //    State.data.status = false;
     State.data.effect = random(10, 20);
     State.saveState();
-//    Serial.println("TO:");
-//    State.printStateChar();
+    Serial.println("PRINT:");
+    State.printStateChar();
 
     // Инициализирую WIFI
     WIFIinit();

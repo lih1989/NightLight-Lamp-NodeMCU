@@ -90,4 +90,8 @@ void HTTP_init(void) {
     Serial.println("HTTP server started");
     State.data.effect = random(1, 5);
     State.saveState();
+    char tmp[256];
+    Serial.println("PRINT:");
+    State.readFile123(tmp);
+    Serial.println(tmp);
 }
