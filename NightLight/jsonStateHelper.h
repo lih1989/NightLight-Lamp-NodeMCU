@@ -53,6 +53,7 @@ class JsonState {
       data.effect = doc["effect"] | 1;
       data.volume = doc["volume"] | 10;
       strlcpy(data.ssidAP, doc["ssidAP"], sizeof(data.ssidAP));
+      Serial.printf("LOAD: [data.ssidAP:%s], [doc[ssidAP]:%s]\n", data.ssidAP,  doc["ssidAP"]);
       strlcpy(data.passwordAP, doc["passwordAP"], sizeof(data.passwordAP));
       strlcpy(data.ssid, doc["ssid"], sizeof(data.ssid));
       strlcpy(data.password, doc["password"], sizeof(data.password));
@@ -64,17 +65,10 @@ class JsonState {
     // Saves the configuration to a file
     void saveState() {
       Serial.println("--- saveState---");
-//      Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
-//      Serial.printf("[volume:%d], [status:%s], [effect:%s]\n", data.volume, data.status, data.effect);
       Serial.printf("[ssidAP:%s], [passwordAP:%s], [ssid:%s], [password:%s]\n", data.ssidAP,  data.passwordAP, data.ssid, data.password);
-      // Delete existing file, otherwise the configuration is appended to the file
-//      File file = SPIFFS.open(stateFilePath, "w");
-//      if (!file) {
-//        Serial.println(F("saveState - Failed to open file"));
-//      }
 
       StaticJsonDocument<512> doc;
-//
+      
       // Set the values in the document
       doc["status"] = data.status;
       doc["effect"] = data.effect;
@@ -89,20 +83,23 @@ class JsonState {
       if (serializeJsonPretty(doc, strData) == 0) {
         Serial.println(F("saveState - serializeJsonPretty: Failed to write to file"));
       }
-        Serial.println("+++saveState - strData+++");
-        Serial.println(strData);
+      Serial.println("+++saveState - strData+++");
+      Serial.println(strData);
 
-//      int bytesWritten = file.print(file);
-//      if (bytesWritten > 0) {
-//        Serial.println("File was written");
-//        Serial.println(bytesWritten);
-//
-//      } else {
-//        Serial.println("File write failed");
-//      }
-//
-//      // Close the file
-//      file.close();
+
+      Serial.printf("Writing file: %s\r\n", stateFilePath);
+  
+      File file = SPIFFS.open(stateFilePath, "w");
+      if(!file){
+          Serial.println("- failed to open file for writing");
+          return;
+      }
+      if(file.print(strData)){
+          Serial.println("- file written");
+      } else {
+          Serial.println("- write failed");
+      }
+      file.close();
     }
 
     // Prints the content of a file to the Serial

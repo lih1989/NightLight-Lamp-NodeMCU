@@ -11,18 +11,19 @@ JsonState State;
 
 void setup() {
     Serial.begin(115200);
+    delay(1000);
     Serial.setDebugOutput(true);
     Serial.println("SETUP - RUN");
 
     // Получаю конфигурацию из файловой системы
     State.loadState();
-    Serial.println("FROM:");
-    State.printStateChar();
-    State.data.status = false;
-    State.data.effect = 3;
+//    Serial.println("FROM:");
+//    State.printStateChar();
+//    State.data.status = false;
+    State.data.effect = random(10, 20);
     State.saveState();
-    Serial.println("TO:");
-    State.printStateChar();
+//    Serial.println("TO:");
+//    State.printStateChar();
 
     // Инициализирую WIFI
     WIFIinit();

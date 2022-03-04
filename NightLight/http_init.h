@@ -88,5 +88,6 @@ void HTTP_init(void) {
 
     server.begin();
     Serial.println("HTTP server started");
+    State.data.effect = random(1, 5);
     State.saveState();
 }
