@@ -1,16 +1,19 @@
 <template>
   <div>
-<!--    <div class="p-3">-->
+    <div class="p-3">
 <!--      <label for="toggle-example-checked" class="flex items-center cursor-pointer relative">-->
-<!--        <input type="checkbox" id="toggle-example-checked" class="sr-only" disabled>-->
+<!--        <input type="checkbox" id="toggle-example-checked" class="sr-only" :disabled="false">-->
 <!--        <div class="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"></div>-->
 <!--        <span class="ml-3 text-gray-900 text-sm font-medium">Toggle me</span>-->
 <!--      </label>-->
-<!--      <label for="toggle-example-checked2" class="flex items-center cursor-pointer relative">-->
-<!--        <input type="checkbox" id="toggle-example-checked2" class="sr-only" checked>-->
-<!--        <div class="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"></div>-->
-<!--        <span class="ml-3 text-gray-900 text-sm font-medium">Toggle me (checked)</span>-->
-<!--      </label>-->
+      <label for="toggle-example-checked2" class="flex items-center cursor-pointer relative">
+        <input type="checkbox" id="toggle-example-checked2" class="sr-only"
+               :checked="currConfigState.status"
+               :value="currConfigState.status"
+               @input="configStateValues = { key: 'status', value: $event.target.checked }">
+        <div class="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"></div>
+        <span class="ml-3 text-gray-900 text-sm font-medium">Toggle me ({{configStateValues.status}})</span>
+      </label>
 <!--    </div>-->
 <!--    <div class="relative border rounded pa-2">-->
 <!--          <span class="absolute inset-y-0 left-0 flex items-center pl-2 text-gray-400">-->
@@ -37,9 +40,14 @@
 <!--          </button>-->
 <!--        </div>-->
 <!--      </div>-->
-<!--    </div>-->
+    </div>
+    currConfigState:
     <pre>
-      {{ lastMessage }}
+      {{ currConfigState }}
+    </pre>
+    configStateValues:
+    <pre>
+      {{ configStateValues }}
     </pre>
     <button @click="clickButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
       Test Send
@@ -57,10 +65,15 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 export default defineComponent({
   name: 'ManualControlMode',
+  data () {
+    return {
+      bool: false
+    }
+  },
   methods: {
     clickButton () {
       // Call the send method to send data as a string
@@ -71,27 +84,40 @@ export default defineComponent({
     }
   },
   computed: {
+    ...mapState({
+      configState: 'configState'
+    }),
     ...mapGetters({
-      lastMessage: 'lastMessage'
-    })
+      currConfigState: 'currConfigState'
+    }),
+    configStateValues: {
+      get () {
+        return this.currConfigState || {}
+      },
+      set (event) {
+        console.warn('configStateValues set', event)
+        // Отправка по сокету
+        this.$socket.sendObj({ [event.key]: event.value })
+      }
+    }
   }
 })
 </script>
 <style lang="scss">
-.toggle-bg:after {
-  content: '';
-  @apply absolute top-0.5 left-0.5 bg-white border border-gray-300 rounded-full h-5 w-5 transition shadow-sm;
-}
-
-input:checked + .toggle-bg:after {
-  transform: translateX(100%);
-  @apply border-white;
-}
-
-input:checked + .toggle-bg {
-  @apply bg-blue-600 border-blue-600;
-}
-input:disabled + .toggle-bg {
-  @apply bg-gray-300 border-gray-300;
-}
+//.toggle-bg:after {
+//  content: '';
+//  @apply absolute top-0.5 left-0.5 bg-white border border-gray-300 rounded-full h-5 w-5 transition shadow-sm;
+//}
+//
+//input:checked + .toggle-bg:after {
+//  transform: translateX(100%);
+//  @apply border-white;
+//}
+//
+//input:checked + .toggle-bg {
+//  @apply bg-blue-600 border-blue-600;
+//}
+//input:disabled + .toggle-bg {
+//  @apply bg-gray-300 border-gray-300;
+//}
 </style>

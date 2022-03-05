@@ -175,7 +175,4 @@ class JsonState {
         strlcpy(data.password, doc["password"], sizeof(data.password));
       }
     }
-
-  private:
-
 };

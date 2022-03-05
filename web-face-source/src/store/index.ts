@@ -7,7 +7,9 @@ export default createStore({
       // Connection Status
       isConnected: false,
       // Message content
-      message: '',
+      configState: {
+        status: true
+      },
       // Reconnect error
       reconnectError: false,
       // Heartbeat message sending time
@@ -21,6 +23,11 @@ export default createStore({
     SOCKET_ONOPEN (state, event) {
       main.config.globalProperties.$socket = event.currentTarget
       state.socket.isConnected = true
+      // Запрос на инициализацию
+      main.config.globalProperties.$socket.sendObj({
+        code: 200,
+        initial: true
+      })
       // When the connection is successful, start sending heartbeat messages regularly to avoid being disconnected by the server
       state.socket.heartBeatTimer = setInterval(() => {
         const message = 'Heartbeat message'
@@ -45,9 +52,9 @@ export default createStore({
       console.error(state, event)
     },
     // Receive the message sent by the server
-    SOCKET_ONMESSAGE (state, message) {
-      console.warn('SOCKET_ONMESSAGE', message)
-      state.socket.message = message
+    SOCKET_ONMESSAGE (state, data) {
+      console.warn('SOCKET_ONMESSAGE', data)
+      state.socket.configState = data
     },
     // Auto reconnect
     SOCKET_RECONNECT (state, count) {
@@ -62,8 +69,8 @@ export default createStore({
     isSocketConnected (state) {
       return !!state?.socket?.isConnected
     },
-    lastMessage (state) {
-      return state?.socket?.message || {}
+    currConfigState (state) {
+      return state?.socket?.configState || {}
     }
   },
   modules: {}
