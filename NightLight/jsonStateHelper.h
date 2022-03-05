@@ -1,14 +1,6 @@
 #include <ArduinoJson.h>
 #include <FS.h>
-//{
-//  "status": true,
-//  "effect": 1,
-//  "ssidAP": "NightLamp",
-//  "passwordAP": "todo_dev",
-//  "ssid": "dd-wrt",
-//  "password": "qwerty12345",
-//  "volume": 10
-//}
+
 struct State {
   bool status;
   int effect;
@@ -22,57 +14,13 @@ struct State {
 class JsonState {
   public:
     State data;
-    JsonState(){
+
+    JsonState () {
       SPIFFS.begin();
     };
-    const char *stateFilePath = "/config.json";
-// метод читает состояние с файловой системы
-    void getStateFromFile (char* return_data) {
-        int n=0;
-        Serial.printf("Reading file: %s\n", stateFilePath);
 
-        File file = SPIFFS.open(stateFilePath, "r");
-        if (!file || file.isDirectory())
-        {
-            Serial.println("Failed to open file for reading");
-            return;
-        }
-        Serial.print("Read from file: ");
-        char tmp[file.size() + 1];
-        while (file.available()) {
-            char c =  file.read();
-            delayMicroseconds(100);
-            tmp[n] = c; //записываю во временный буфер
-            n=n+1;
-        }
-        file.close();
-
-        strlcpy(return_data, tmp, sizeof(tmp));
-    }
-// метод читает состояние из структуры
-    void getState (char* output) {
-      StaticJsonDocument<512> doc;
-
-      // Set the values in the document
-      doc["status"] = data.status;
-      doc["effect"] = data.effect;
-      doc["volume"] = data.volume;
-      doc["ssidAP"] = data.ssidAP;
-      doc["passwordAP"] = data.passwordAP;
-      doc["ssid"] = data.ssid;
-      doc["password"] = data.password;
-
-      char tmp[512];
-      if (serializeJsonPretty(doc, tmp) == 0) {
-        Serial.println(F("getState - serializeJsonPretty: Failed to write to file"));
-      }
-      strlcpy(output, tmp, sizeof(tmp));
-    }
-
-
-
-    // Loads the configuration from a file
-    void loadState() {
+    // Инициализировать состояние хранилища из файла
+    void initReadState (const char* stateFilePath) {
       // Open file for reading
       File file = SPIFFS.open(stateFilePath, "r");
       if (!file) {
@@ -92,24 +40,24 @@ class JsonState {
         return;
       }
 
-      // Copy values from the JsonDocument to the Config
+      // Copy values from the JsonDocument to the State
       data.status = doc["status"] | false;
       data.effect = doc["effect"] | 1;
       data.volume = doc["volume"] | 10;
       strlcpy(data.ssidAP, doc["ssidAP"], sizeof(data.ssidAP));
-      Serial.printf("LOAD: [data.ssidAP:%s], [doc[ssidAP]:%s]\n", data.ssidAP,  doc["ssidAP"]);
       strlcpy(data.passwordAP, doc["passwordAP"], sizeof(data.passwordAP));
       strlcpy(data.ssid, doc["ssid"], sizeof(data.ssid));
       strlcpy(data.password, doc["password"], sizeof(data.password));
+      // Serial.printf("LOAD: [data.ssidAP:%s], [doc[ssidAP]:%s]\n", data.ssidAP,  doc["ssidAP"]);
 
       // Close the file (Curiously, File's destructor doesn't close the file)
       file.close();
     }
 
-    // Saves the configuration to a file
-    void saveState() {
-      Serial.println("--- saveState---START---");
-      Serial.printf("[ssidAP:%s], [passwordAP:%s], [ssid:%s], [password:%s]\n", data.ssidAP,  data.passwordAP, data.ssid, data.password);
+    // Сохранить состояние хранилища в файл
+    void writeFileState (const char* stateFilePath) {
+      // Serial.println("--- writeFileState---START---");
+      // Serial.printf("[ssidAP:%s], [passwordAP:%s], [ssid:%s], [password:%s]\n", data.ssidAP,  data.passwordAP, data.ssid, data.password);
 
       StaticJsonDocument<512> doc;
 
@@ -125,10 +73,10 @@ class JsonState {
       // Serialize JSON to file
       char strData[512];
       if (serializeJsonPretty(doc, strData) == 0) {
-        Serial.println(F("saveState - serializeJsonPretty: Failed to write to file"));
+        Serial.println(F("writeFileState - serializeJsonPretty: Failed to write to file"));
       }
-//      Serial.println("+++saveState - strData+++");
-//      Serial.println(strData);
+      // Serial.println("+++writeFileState - strData+++");
+      // Serial.println(strData);
 
 
       Serial.printf("Writing file: %s\r\n", stateFilePath);
@@ -144,13 +92,54 @@ class JsonState {
           Serial.println("- write failed");
       }
       file.close();
-      Serial.println("--- saveState---END---");
+      Serial.println("--- writeFileState---END---");
     }
 
-    // Prints the content of a file to the Serial
-    void wsJsonPayloadHandler(char * payload) {
-      Serial.println(payload);
+    // метод читает состояние с файловой системы
+    void readFileState (const char* stateFilePath, char* return_data) {
+        // Serial.printf("Reading file: %s\n", stateFilePath);
+        File file = SPIFFS.open(stateFilePath, "r");
+        if (!file || file.isDirectory()) {
+            Serial.println("Failed to open file for reading");
+            return;
+        }
+        // Serial.print("Read from file: ");
+        char tmp[file.size() + 1];
+        int n=0;
+        while (file.available()) {
+            char c =  file.read();
+            delayMicroseconds(100);
+            tmp[n] = c; //записываю во временный буфер
+            n=n+1;
+        }
+        file.close();
 
+        strlcpy(return_data, tmp, sizeof(tmp));
+    }
+
+    // метод читает состояние из структуры
+    void getState (char* output) {
+      StaticJsonDocument<512> doc;
+
+      // Set the values in the document
+      doc["status"] = data.status;
+      doc["effect"] = data.effect;
+      doc["volume"] = data.volume;
+      doc["ssidAP"] = data.ssidAP;
+      doc["passwordAP"] = data.passwordAP;
+      doc["ssid"] = data.ssid;
+      doc["password"] = data.password;
+
+      char tmp[512];
+      if (serializeJsonPretty(doc, tmp) == 0) {
+        Serial.println(F("getState - serializeJsonPretty: Failed to write to file"));
+      }
+      strlcpy(output, tmp, sizeof(tmp));
+    }
+
+    // Изменить состояние хранилища в соотвествии с данными веб сокетов
+    void wsJsonPayloadHandler(char * payload) {
+      // Serial.println(payload);
       StaticJsonDocument<512> doc;
       DeserializationError error = deserializeJson(doc, payload);
       if (error) {
@@ -186,5 +175,7 @@ class JsonState {
         strlcpy(data.password, doc["password"], sizeof(data.password));
       }
     }
+
+  private:
 
 };

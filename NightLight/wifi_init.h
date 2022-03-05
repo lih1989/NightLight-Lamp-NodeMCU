@@ -25,8 +25,8 @@ bool StartAPMode() {
 	WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
 	// Включаем WIFI в режиме точки доступа с именем и паролем
 	// хронящихся в переменных _ssidAP _passwordAP
-	String _ssidAP = State.data.ssidAP;
-	String _passwordAP = State.data.passwordAP;
+	String _ssidAP = ConfigState.data.ssidAP;
+	String _passwordAP = ConfigState.data.passwordAP;
 
     //  Ограничение по кол-ву полключенных клиентов чтобы не было конфликтов при настройке
     //	ssid, pass, channel, hidden, max_connection
@@ -45,8 +45,8 @@ void WIFIinit() {
     // Попытка подключения к точке доступа
     WiFi.mode(WIFI_STA);
     byte tries = 11;
-    String _ssid = State.data.ssid;
-    String _password = State.data.password;
+    String _ssid = ConfigState.data.ssid;
+    String _password = ConfigState.data.password;
 
     if (_ssid == "" && _password == "") {
         WiFi.begin();

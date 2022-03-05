@@ -12,9 +12,9 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         case WStype_CONNECTED: {
                 IPAddress ip = webSocket.remoteIP(num);
                 Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
-
+                // TODO DEV
                 char tmp[256];
-                State.getState(tmp);
+                ConfigState.getState(tmp);
                 Serial.println("WStype_CONNECTED PRINT:");
                 Serial.println(tmp);
                 // send message to client
@@ -23,15 +23,16 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         }
         case WStype_TEXT: {
             Serial.printf("[%u] get Text: %s\n", num, payload);
+            // TODO DEV
             //  Обрабатываю входящее сообщение и генерирую ответ
-            State.wsJsonPayloadHandler((char*) payload);
+            ConfigState.wsJsonPayloadHandler((char*) payload);
             char tmp[256];
-            State.getState(tmp);
+            ConfigState.getState(tmp);
             Serial.println("WStype_TEXT PRINT:");
             Serial.println(tmp);
             // send message to client
             webSocket.sendTXT(num, tmp);
-//            State.saveState();
+            ConfigState.writeFileState(stateFilePath);
 
             // send message to client
             // webSocket.sendTXT(num, "message here");

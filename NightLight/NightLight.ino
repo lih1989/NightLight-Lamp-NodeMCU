@@ -4,7 +4,8 @@
 
 // Hand made logic
 #include "jsonStateHelper.h"
-JsonState State;
+JsonState ConfigState;
+char stateFilePath[] = "/config.json";
 #include "wifi_init.h"
 #include "http_init.h"
 #include "ws_init.h"
@@ -16,13 +17,15 @@ void setup() {
     Serial.println("SETUP - RUN");
 
     // Получаю конфигурацию из файловой системы
-    State.loadState();
-    State.data.effect = random(10, 20);
-    State.saveState();
+    ConfigState.initReadState(stateFilePath);
+    // TODO RM DEBUG
+    ConfigState.data.effect = random(10, 20);
+
+    ConfigState.writeFileState(stateFilePath);
 
     char tmp[256];
     Serial.println("SETUP PRINT:");
-    State.getState(tmp);
+    ConfigState.getState(tmp);
     Serial.println(tmp);
 
     // Инициализирую WIFI

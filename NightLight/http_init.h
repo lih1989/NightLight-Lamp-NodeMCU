@@ -89,10 +89,10 @@ void HTTP_init(void) {
     server.begin();
     Serial.println("HTTP server started");
 //    TODO DEBUG
-//    State.data.effect = random(1, 5);
-//    State.saveState();
+//    ConfigState.data.effect = random(1, 5);
+//    ConfigState.writeFileState();
 //    char tmp[256];
 //    Serial.println("PRINT:");
-//    State.getState(tmp);
+//    ConfigState.getState(tmp);
 //    Serial.println(tmp);
 }
