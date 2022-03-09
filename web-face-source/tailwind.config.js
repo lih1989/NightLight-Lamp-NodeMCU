@@ -10,7 +10,17 @@ module.exports = {
     extend: {}
   },
   variants: {
-    extend: {}
+    extend: {
+      opacity: [
+        'disabled'
+      ],
+      backgroundColor: [
+        'disabled'
+      ],
+      cursor: [
+        'disabled'
+      ]
+    }
   },
   plugins: [
     require('flowbite/plugin')

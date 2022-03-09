@@ -10,7 +10,8 @@
         <input type="checkbox" id="toggle-example-checked2" class="sr-only"
                :checked="currConfigState.status"
                :value="currConfigState.status"
-               @input="configStateValues = { key: 'status', value: $event.target.checked }">
+               :disabled="false"
+               @input="configStateValues = { key: 'status', value: $event }">
         <div class="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"></div>
         <span class="ml-3 text-gray-900 text-sm font-medium">Toggle me ({{configStateValues.status}})</span>
       </label>
@@ -41,6 +42,28 @@
 <!--        </div>-->
 <!--      </div>-->
     </div>
+    TODO RANGE
+    <div style="max-width: 300px; background-color: #cccccc">
+      <div class="relative pt-1">
+        <label for="customRange3" class="form-label">Example range {{int}} | {{ readableTime }}</label>
+        <input
+          type="range"
+          class="
+      form-range
+      w-full
+      h-6
+      p-0
+      focus:outline-none focus:ring-0 focus:shadow-none
+    "
+          min="0"
+          max="3600"
+          step="1"
+          :value="currConfigState.motionSensorSeconds"
+          @input="changeTime"
+          id="customRange3"
+        />
+      </div>
+    </div>
     currConfigState:
     <pre>
       {{ currConfigState }}
@@ -66,12 +89,15 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { mapGetters, mapState } from 'vuex'
+import { numberToHhMmSs } from '@/Helper'
+import lodashDebounce from 'lodash/debounce'
 
 export default defineComponent({
   name: 'ManualControlMode',
   data () {
     return {
-      bool: false
+      bool: false,
+      int: 5
     }
   },
   methods: {
@@ -81,7 +107,12 @@ export default defineComponent({
       // this.$socket.send('some data')
       // If fomat is configured as json, you can call the send Obj method to send data
       this.$socket.sendObj({ volume: Math.floor(Math.random() * 9) })
-    }
+    },
+    changeTime: lodashDebounce(function (value) {
+      console.log('changeTime', value, this.readableTime)
+      this.configStateValues = { key: 'motionSensorSeconds', value: value }
+      // this.$socket.sendObj({ motionSensorSeconds:  * 1000 })
+    }, 300)
   },
   computed: {
     ...mapState({
@@ -96,9 +127,26 @@ export default defineComponent({
       },
       set (event) {
         console.warn('configStateValues set', event)
+        let resultValue = null
+        switch (event.key) {
+          case 'status': {
+            resultValue = event.value.target.checked
+            break
+          }
+          case 'motionSensorSeconds': {
+            resultValue = isNaN(Number(event.value.target.value)) ? 0 : Number(event.value.target.value)
+            break
+          }
+          default:
+            break
+        }
         // Отправка по сокету
-        this.$socket.sendObj({ [event.key]: event.value })
+        console.warn('------------', { [event.key]: resultValue })
+        this.$socket.sendObj({ [event.key]: resultValue })
       }
+    },
+    readableTime () {
+      return numberToHhMmSs(this.int)
     }
   }
 })

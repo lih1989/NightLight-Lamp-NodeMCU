@@ -3,6 +3,8 @@
 
 struct State {
   bool status;
+  bool motionSensor;
+  long motionSensorSeconds;
   int effect;
   char ssidAP[64];
   char passwordAP[64];

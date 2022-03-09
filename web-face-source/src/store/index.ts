@@ -8,7 +8,8 @@ export default createStore({
       isConnected: false,
       // Message content
       configState: {
-        status: true
+        status: true,
+        motionSensorSeconds: true
       },
       // Reconnect error
       reconnectError: false,

@@ -1,5 +1,7 @@
 {
   "status": true,
+  "motionSensor": true,
+  "motionSensorSeconds": 360000,
   "effect": 1,
   "ssidAP": "NL-V1",
   "passwordAP": "todo_dev",

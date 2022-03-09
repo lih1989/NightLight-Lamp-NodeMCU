@@ -39,6 +39,21 @@ const customPassToStoreHandler = function (eventName: string, event: socketEvent
   // Trigger methods in storm
   this.store[method](target, msg)
 }
+
+// Преобразую число(миллисекунды) в читаемый формат Часы:Минуты:Секунды
+const numberToHhMmSs = function (timestamp = 9462) {
+  const hours = Math.floor(timestamp / 60 / 60)
+  const minutes = Math.floor(timestamp / 60) - (hours * 60)
+  const seconds = timestamp % 60
+
+  return [
+    (hours > 9 ? '' : '0') + hours + 'ч ',
+    (minutes > 9 ? '' : '0') + minutes + 'м ',
+    (seconds > 9 ? '' : '0') + seconds + 'с '
+  ].join('')
+  // return hours + ':' + minutes + ':' + seconds
+}
 export {
-  customPassToStoreHandler
+  customPassToStoreHandler,
+  numberToHhMmSs
 }
