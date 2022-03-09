@@ -44,6 +44,8 @@ class JsonState {
 
       // Copy values from the JsonDocument to the State
       data.status = doc["status"] | false;
+      data.motionSensor = doc["motionSensor"] | false;
+      data.motionSensorSeconds = doc["motionSensorSeconds"] | 3600;
       data.effect = doc["effect"] | 1;
       data.volume = doc["volume"] | 10;
       strlcpy(data.ssidAP, doc["ssidAP"], sizeof(data.ssidAP));
@@ -65,6 +67,8 @@ class JsonState {
 
       // Set the values in the document
       doc["status"] = data.status;
+      doc["motionSensor"] = data.motionSensor;
+      doc["motionSensorSeconds"] = data.motionSensorSeconds;
       doc["effect"] = data.effect;
       doc["volume"] = data.volume;
       doc["ssidAP"] = data.ssidAP;
@@ -125,6 +129,8 @@ class JsonState {
 
       // Set the values in the document
       doc["status"] = data.status;
+      doc["motionSensor"] = data.motionSensor;
+      doc["motionSensorSeconds"] = data.motionSensorSeconds;
       doc["effect"] = data.effect;
       doc["volume"] = data.volume;
       doc["ssidAP"] = data.ssidAP;
@@ -151,6 +157,14 @@ class JsonState {
 
       if (doc.containsKey("status")) {
         data.status = doc["status"];
+      }
+
+      if (doc.containsKey("motionSensor")) {
+        data.motionSensor = doc["motionSensor"];
+      }
+
+      if (doc.containsKey("motionSensorSeconds")) {
+        data.motionSensorSeconds = doc["motionSensorSeconds"];
       }
 
       if (doc.containsKey("effect")) {
