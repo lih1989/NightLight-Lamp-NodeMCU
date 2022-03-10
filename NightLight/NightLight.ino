@@ -7,7 +7,6 @@
 JsonState ConfigState;
 char stateFilePath[] = "/config.json";
 #include "wifi_init.h"
-// #include "http_init.h" TODO OLD
 #include "AsyncHttpInit.h"
 #include "ws_init.h"
 
@@ -42,6 +41,5 @@ void setup() {
 
 void loop() {
     dnsServer.processNextRequest();
-//     server.handleClient();
     webSocket.loop();
 }
