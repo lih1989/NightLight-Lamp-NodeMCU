@@ -24,14 +24,15 @@ module.exports = {
   //     }
   //   }
   // },
-  configureWebpack: {
-    optimization: {
-      splitChunks: {
-        minSize: 10000,
-        maxSize: 100000
-      }
-    }
-  },
+  // Разбивать js на куски при сборке
+  // configureWebpack: {
+  //   optimization: {
+  //     splitChunks: {
+  //       minSize: 10000,
+  //       maxSize: 100000
+  //     }
+  //   }
+  // },
   pwa: {
     name: 'RRC',
     themeColor: '#e4300e',
