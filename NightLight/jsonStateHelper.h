@@ -1,21 +1,19 @@
 #include <ArduinoJson.h>
 #include <FS.h>
 
-struct State {
-  bool status;
-  bool motionSensor;
-  long motionSensorSeconds;
-  int effect;
-  char ssidAP[64];
-  char passwordAP[64];
-  char ssid[64];
-  char password[64];
-  int volume;
-};
-
 class JsonState {
   public:
-    State data;
+    struct {
+      bool status;
+      bool motionSensor;
+      long motionSensorSeconds;
+      int effect;
+      char ssidAP[64];
+      char passwordAP[64];
+      char ssid[64];
+      char password[64];
+      int volume;
+    } data;
 
     JsonState () {
       SPIFFS.begin();
@@ -42,7 +40,7 @@ class JsonState {
         return;
       }
 
-      // Copy values from the JsonDocument to the State
+      // Copy values from the JsonDocument to the State Data
       data.status = doc["status"] | false;
       data.motionSensor = doc["motionSensor"] | false;
       data.motionSensorSeconds = doc["motionSensorSeconds"] | 3600;
