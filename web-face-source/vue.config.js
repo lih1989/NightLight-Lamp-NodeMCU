@@ -3,7 +3,7 @@ const path = require('path')
 
 module.exports = {
   productionSourceMap: false,
-  outputDir: path.resolve(__dirname, '../NightLight/data'),
+  outputDir: path.resolve(__dirname, '../firmware/data'),
   publicPath: '',
   filenameHashing: false,
   devServer: {
