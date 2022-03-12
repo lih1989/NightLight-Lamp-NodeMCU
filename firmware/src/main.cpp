@@ -33,7 +33,6 @@ void setup() {
     WIFIinit();
 
     // Инициализирую веб сервер
-//     HTTP_init(); TODO OLD
     initHttp();
 
     // Инициализирую веб сокет сервер

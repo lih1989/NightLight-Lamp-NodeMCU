@@ -4,7 +4,6 @@
 WebSocketsServer webSocket = WebSocketsServer(1181);
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length){
-  Serial.printf("webSocketEvent(%d, %d, ...)\r\n", num, type);
   switch(type) {
         case WStype_DISCONNECTED:
             Serial.printf("[%u] Disconnected!\n", num);
@@ -46,6 +45,10 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
 
             // send message to client
             // webSocket.sendBIN(num, payload, length);
+            break;
+        }
+        default: {
+            Serial.printf("SWITCH DEFAULT: webSocketEvent(%d, %d, ...)\r\n", num, type);
             break;
         }
     }
