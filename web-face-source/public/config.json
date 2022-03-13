@@ -3,7 +3,7 @@
   "motionSensor": true,
   "motionSensorSeconds": 360000,
   "effect": 1,
-  "ssidAP": "NL-V1",
+  "ssidAP": "RedMi1",
   "passwordAP": "todo_dev",
   "ssid": "dd-wrt",
   "password": "qwerty12345",
