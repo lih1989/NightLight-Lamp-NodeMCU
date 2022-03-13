@@ -108,7 +108,7 @@ export default defineComponent({
       // If fomat is configured as json, you can call the send Obj method to send data
       this.$socket.sendObj({ volume: Math.floor(Math.random() * 9) })
     },
-    changeTime: lodashDebounce(function (value) {
+    changeTime: lodashDebounce(function (value: any) {
       console.log('changeTime', value, this.readableTime)
       this.configStateValues = { key: 'motionSensorSeconds', value: value }
       // this.$socket.sendObj({ motionSensorSeconds:  * 1000 })
