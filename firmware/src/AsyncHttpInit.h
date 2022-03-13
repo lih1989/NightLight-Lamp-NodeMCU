@@ -50,15 +50,15 @@ void notFound(AsyncWebServerRequest *request) {
 }
 
 void initHttp(void) {
-    server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html"); //set AUTH .setAuthentication("user", "pass");
+    server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html"); //set AUTH .setAuthentication("user", "pass");
     // Serve files in directory "/www/" when request url starts with "/"
     // Request to the root or none existing files will try to server the default
     // file name "index.htm" if exists
     // [WARNING] serveStatic on '/' responds with net::ERR_ABORTED 404 for subdirectories
     // FIX: Maximum 5 requests at a time!
-    server.serveStatic("/img/", SPIFFS, "/img/").setCacheControl("max-age=360");
-    server.serveStatic("/js/", SPIFFS, "/js/").setCacheControl("max-age=360");
-    server.serveStatic("/css/", SPIFFS, "/css/").setCacheControl("max-age=360");
+    server.serveStatic("/img/", LittleFS, "/img/").setCacheControl("max-age=360");
+    server.serveStatic("/js/", LittleFS, "/js/").setCacheControl("max-age=360");
+    server.serveStatic("/css/", LittleFS, "/css/").setCacheControl("max-age=360");
 
     server.onNotFound(notFound);
     server.addHandler(new CaptiveRequestHandler()).setFilter(ON_AP_FILTER);//only when requested from AP

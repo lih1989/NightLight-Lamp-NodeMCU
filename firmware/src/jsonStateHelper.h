@@ -1,5 +1,5 @@
 #include <ArduinoJson.h>
-#include <FS.h>
+#include <LittleFS.h>
 
 class JsonState {
   public:
@@ -16,13 +16,13 @@ class JsonState {
     } data;
 
     JsonState () {
-      SPIFFS.begin();
+      LittleFS.begin();
     };
 
     // Инициализировать состояние хранилища из файла
     void initReadState (const char* stateFilePath) {
       // Open file for reading
-      File file = SPIFFS.open(stateFilePath, "r");
+      File file = LittleFS.open(stateFilePath, "r");
       if (!file) {
         Serial.println(F("loadConfiguration - Failed to open file"));
         return;
@@ -85,7 +85,7 @@ class JsonState {
 
       Serial.printf("Writing file: %s\r\n", stateFilePath);
 
-      File file = SPIFFS.open(stateFilePath, "w");
+      File file = LittleFS.open(stateFilePath, "w");
       if(!file){
           Serial.println("- failed to open file for writing");
           return;
@@ -102,7 +102,7 @@ class JsonState {
     // метод читает состояние с файловой системы
     void readFileState (const char* stateFilePath, char* return_data) {
         // Serial.printf("Reading file: %s\n", stateFilePath);
-        File file = SPIFFS.open(stateFilePath, "r");
+        File file = LittleFS.open(stateFilePath, "r");
         if (!file || file.isDirectory()) {
             Serial.println("Failed to open file for reading");
             return;
