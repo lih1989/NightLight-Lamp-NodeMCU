@@ -10,6 +10,8 @@ char stateFilePath[] = "/config.json";
 #include "wifi_init.h"
 #include "AsyncHttpInit.h"
 #include "ws_init.h"
+#include "rgbManager.h"
+rgbManager RgbControl;
 
 void setup() {
     Serial.begin(115200);

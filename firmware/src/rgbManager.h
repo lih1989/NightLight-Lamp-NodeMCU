@@ -123,7 +123,7 @@ void rgbManager::brightnessTick() {
   }
 }
 
-void loop() {
+void rgbManager::loop() {
   touch.tick();
   if (touch.hasClicks()) {
     byte clicks = touch.getClicks();
@@ -177,22 +177,23 @@ void loop() {
   }
 
   if (effectTimer.isReady() && powerState) {
-    switch (thisMode) {
-      case 0: lighter();
-        break;
-      case 1: lightBugs();
-        break;
-      case 2: colors();
-        break;
-      case 3: rainbow();
-        break;
-      case 4: sparkles();
-        break;
-      case 5: fire();
-        break;
-      case 6: vinigret();
-        break;
-    }
+    Serial.println("RGB > Loop > change mode");
+    // switch (thisMode) {
+    //   case 0: lighter();
+    //     break;
+    //   case 1: lightBugs();
+    //     break;
+    //   case 2: colors();
+    //     break;
+    //   case 3: rainbow();
+    //     break;
+    //   case 4: sparkles();
+    //     break;
+    //   case 5: fire();
+    //     break;
+    //   case 6: vinigret();
+    //     break;
+    // }
     FastLED.show();
   }
 
